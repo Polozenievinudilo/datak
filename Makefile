@@ -1,37 +1,24 @@
-SHELL = /bin/sh
+CC=gcc
+LDFLAGS=-lallegro -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_color -lm
+SOURCES=src/vector.c \
+        src/asteroid.c \
+        src/ship.c \
+        src/shooter.c \
+        src/game.c \
+        src/main.c
+OBJ_DIR=obj
+SRC_DIR=src
+HEADERS=$(SOURCES:.c=.h)
+OBJECTS=$(SOURCES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+EXECUTABLE=asteroids
 
-PROJECT  := project_name
+all: $(EXECUTABLE) $(OBJECTS)
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) -o $@ $(LDFLAGS) $(OBJECTS)
 
-# ------------------
-# External programs
-# ------------------
-CC  := gcc
-RM  := rm -rf
+$(OBJECTS): obj/%.o : src/%.c
+	$(CC) -c $< -o $@
 
-# --------------------
-# Directories & Files
-# --------------------
-D_SRC    := ./src
-FILES_C  := $(wildcard $(D_SRC)/*.c)
-FILES_O  := $(FILES_C:.c=.o)
-
-# ------------
-# Flags 
-# ------------
-CFLAGS  := -Wall
-LFLAGS  :=
-
-# ------------
-# Targets 
-# ------------
-default: $(PROJECT)
-
-%.o: %.c
-	$(CC) -c -I $(D_SRC) $(CFLAGS) $< -o $@
-
-$(PROJECT): $(FILES_O)
-	$(CC) -I $(D_SRC) $(LFLAGS) $(FILES_O) -o $@
-
-.phony:	clean
 clean:
-	-$(RM) $(FILES_O) $(PROJECT)
+	rm -f obj/*.o 
+
